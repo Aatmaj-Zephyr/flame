@@ -199,17 +199,39 @@ void main() {
           ..rotate(math.pi / 4)
           ..scaleTo(2.0);
 
-        expect(p.length, 2.0);
+        expectDouble(p.length, 2.0);
 
         p.rotate(-math.pi / 4);
-        expect(p.length, 2.0);
-        expect(p.x, 2.0);
-        expect(p.y, 0.0);
+        expectDouble(p.length, 2.0);
+        expectDouble(p.x, 2.0);
+        expectDouble(p.y, 0.0);
       });
 
       test('scaleTo the zero vector', () {
         final p = Vector2.zero();
         expect(p.normalized().length, 0.0);
+      });
+    });
+
+    group('clampLength', () {
+      test('clamp length min', () {
+        final v = Vector2(1, 0)..clampLength(2.0, 3.0);
+        expect(v.length, 2.0);
+      });
+
+      test('clamp length max', () {
+        final v = Vector2(1, 0)..clampLength(0.5, 0.8);
+        expect(v.length, 0.8);
+      });
+
+      test('clamp negative vector', () {
+        final v = Vector2(-1, -1)..clampLength(0.5, 0.8);
+        expect(v.length, 0.8);
+      });
+
+      test('no effect on vector in range', () {
+        final v = Vector2(1, 0)..clampLength(0.5, 2.0);
+        expect(v.length, 1.0);
       });
     });
 
