@@ -9,7 +9,7 @@ void main() {
   group('JumpCommand', () {
     test('<<jump>> command', () {
       final yarn = YarnProject()
-        ..setVariable(r'$target', 'DOWN')
+        ..variables.setVariable(r'$target', 'DOWN')
         ..parse('title:A\n---\n'
             '<<jump UP>>\n'
             '<<jump {\$target}>>\n'
@@ -114,7 +114,8 @@ void main() {
           '===\n',
         );
       expect(
-        () => DialogueRunner(yarnProject: yarn, dialogueViews: []).runNode('A'),
+        () => DialogueRunner(yarnProject: yarn, dialogueViews: [])
+            .startDialogue('A'),
         hasNameError('NameError: Node "Up" could not be found'),
       );
     });

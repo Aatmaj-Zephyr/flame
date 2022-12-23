@@ -12,11 +12,11 @@ import 'package:meta/meta.dart';
 abstract class DialogueView {
   DialogueView();
 
-  late DialogueRunner _dialogueRunner;
+  DialogueRunner? _dialogueRunner;
 
-  DialogueRunner get dialogueRunner => _dialogueRunner;
+  DialogueRunner? get dialogueRunner => _dialogueRunner;
   @internal
-  set dialogueRunner(DialogueRunner value) => _dialogueRunner = value;
+  set dialogueRunner(DialogueRunner? value) => _dialogueRunner = value;
 
   /// Called before the start of a new dialogue, i.e. before any lines, options,
   /// or commands are delivered.
@@ -27,6 +27,13 @@ abstract class DialogueView {
   /// completes.
   FutureOr<void> onDialogueStart() {}
 
+  /// Called when the dialogue has ended.
+  ///
+  /// This method can be used to clean up any of the dialogue UI. The returned
+  /// future will be awaited before the dialogue runner considers its job
+  /// finished.
+  FutureOr<void> onDialogueFinish() {}
+
   /// Called when the dialogue enters a new [node].
   ///
   /// This will be called immediately after the [onDialogueStart], and then
@@ -36,6 +43,14 @@ abstract class DialogueView {
   /// If this method returns a future, then the dialogue runner will wait for it
   /// to complete before proceeding with the actual dialogue.
   FutureOr<void> onNodeStart(Node node) {}
+
+  /// Called when the dialogue exits the [node].
+  ///
+  /// For example, during a `<<jump>>` this callback will be called with the
+  /// current node, and then [onNodeStart] will be called with the new node.
+  /// Similarly, the command `<<stop>>` will trigger this callback too. At the
+  /// same time, during `<<visit>>` this callback will not be invoked.
+  FutureOr<void> onNodeFinish(Node node) {}
 
   /// Called when the next dialogue [line] should be presented to the user.
   ///
@@ -143,13 +158,6 @@ abstract class DialogueView {
   /// If this method returns a future, the dialogue runner will wait for that
   /// future to complete before proceeding with the dialogue.
   FutureOr<void> onCommand(UserDefinedCommand command) {}
-
-  /// Called when the dialogue has ended.
-  ///
-  /// This method can be used to clean up any of the dialogue UI. The returned
-  /// future will be awaited before the dialogue runner considers its job
-  /// finished.
-  FutureOr<void> onDialogueFinish() {}
 
   /// A future that never completes.
   @internal
